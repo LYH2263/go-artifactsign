@@ -29,7 +29,12 @@ func (s *Service) SignContext(ctx context.Context, payload []byte, meta Meta) (S
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	// BUG: 跳过 closed / nil ks 检查（含 wait 后二次检查）
+	if s.closed {
+		return SignatureView{}, ErrClosed
+	}
+	if s.ks == nil {
+		return SignatureView{}, ErrClosed
+	}
 	if len(payload) == 0 {
 		return SignatureView{}, ErrEmptyPayload
 	}
@@ -42,6 +47,9 @@ func (s *Service) SignContext(ctx context.Context, payload []byte, meta Meta) (S
 		return SignatureView{}, err
 	}
 	s.mu.Lock()
+	if s.closed || s.ks == nil {
+		return SignatureView{}, ErrClosed
+	}
 
 	key := s.ks.Active()
 	if key == nil {
