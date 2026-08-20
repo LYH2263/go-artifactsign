@@ -27,7 +27,6 @@ func New() *List {
 func (l *List) Add(e Entry) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	// 无回滚钩子；调用方必须在 persist 成功后再 Add
 	l.byFP[e.Fingerprint] = e
 }
 
