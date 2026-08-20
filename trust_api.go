@@ -45,8 +45,10 @@ func (s *Service) ExportTrust(keyID string) (TrustRootView, error) {
 	return TrustRootView{
 		KeyID: root.ID,
 		Algo:  root.Algo,
-		// BUG: 导出共享底层数组
-		Material:  root.Material,
+		// 导出必须拷贝材料，不能把内部切片借出去：
+		// 否则调用方就地修改（如值班脚本打码）会污染内部存储，
+		// 导致再次导出同一信任根时拿到被篡改的值。
+		Material:  bytesutil.Clone(root.Material),
 		CreatedAt: root.Created,
 		Active:    root.Active,
 	}, nil
