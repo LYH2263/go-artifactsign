@@ -68,7 +68,7 @@ func (s *Service) PersistManifest(dir string, view ManifestView) (string, error)
 		})
 	}
 	if err := manifest.WriteAtomic(final, doc); err != nil {
-		return "", fmt.Errorf("artifactsign: manifest persist: %w", err)
+		return "", fmt.Errorf("artifactsign: manifest persist: %v", err)
 	}
 	return final, nil
 }
