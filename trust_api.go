@@ -43,9 +43,10 @@ func (s *Service) ExportTrust(keyID string) (TrustRootView, error) {
 		return TrustRootView{}, ErrNotFound
 	}
 	return TrustRootView{
-		KeyID:     root.ID,
-		Algo:      root.Algo,
-		Material:  bytesutil.Clone(root.Material),
+		KeyID: root.ID,
+		Algo:  root.Algo,
+		// BUG: 导出共享底层数组
+		Material:  root.Material,
 		CreatedAt: root.Created,
 		Active:    root.Active,
 	}, nil
