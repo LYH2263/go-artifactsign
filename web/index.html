@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>制品签名校验</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>制品签名校验</h1>
+    <p>摘要 · HMAC 签名/验签 · 信任根 · 吊销</p>
+  </header>
+  <main>
+    <section class="panel">
+      <h2>状态</h2>
+      <p id="stats-line" class="muted">—</p>
+      <button type="button" id="btn-refresh" class="ghost">刷新</button>
+    </section>
+    <section class="panel">
+      <h2>注册密钥</h2>
+      <form id="key-form">
+        <input id="key-id" placeholder="key id" required />
+        <input id="key-mat" placeholder="密钥材料（文本）" required />
+        <button type="submit">注册</button>
+      </form>
+      <pre id="key-out" class="out"></pre>
+    </section>
+    <section class="panel">
+      <h2>试签 / 验签</h2>
+      <form id="sign-form">
+        <input id="sign-name" placeholder="名称" />
+        <textarea id="sign-payload" rows="4" placeholder="制品内容" required></textarea>
+        <button type="submit">签名</button>
+      </form>
+      <pre id="sign-out" class="out"></pre>
+      <form id="verify-form">
+        <input id="ver-key" placeholder="key id" required />
+        <textarea id="ver-payload" rows="3" placeholder="payload" required></textarea>
+        <input id="ver-sig" placeholder="signature hex/base64 JSON 字段由脚本处理" />
+        <button type="submit">验签</button>
+      </form>
+      <pre id="verify-out" class="out"></pre>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
