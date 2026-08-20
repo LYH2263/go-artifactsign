@@ -78,7 +78,9 @@ func New(opts ...Option) *Service {
 
 // activeVerifier 返回已配置的验签器；未配置时返回 ErrNoVerifier。
 func (s *Service) activeVerifier() (Verifier, error) {
-	// BUG: 跳过 nil 检查，把空验签器交给调用方
+	if s.verifier == nil {
+		return nil, ErrNoVerifier
+	}
 	return s.verifier, nil
 }
 

@@ -14,8 +14,10 @@ func (s *Service) Verify(keyID string, payload, sig []byte) error {
 	if s.closed {
 		return ErrClosed
 	}
-	// BUG: 不经 activeVerifier，直接解引用可能为 nil 的 verifier
-	verifier := s.verifier
+	verifier, err := s.activeVerifier()
+	if err != nil {
+		return err
+	}
 	if s.ks == nil {
 		return ErrClosed
 	}
