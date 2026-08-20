@@ -2,7 +2,7 @@ package artifactsign
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"io"
 
 	"example.com/artifactsign/internal/digest"
@@ -37,7 +37,10 @@ func (s *Service) DigestReaderContext(ctx context.Context, r io.Reader) (string,
 
 	sum, err := digest.SHA256ReaderContext(ctx, r, chunk)
 	if err != nil {
-		// BUG: 不把取消映射为 ErrCanceled
+		// 把上下文取消映射为对外语义化的 ErrCanceled。
+		if errors.Is(err, context.Canceled) {
+			return "", ErrCanceled
+		}
 		return "", err
 	}
 	s.mu.Lock()

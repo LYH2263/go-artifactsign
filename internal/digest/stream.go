@@ -3,7 +3,6 @@ package digest
 import (
 	"context"
 	"crypto/sha256"
-	"fmt"
 	"io"
 )
 
@@ -15,7 +14,12 @@ func SHA256ReaderContext(ctx context.Context, r io.Reader, chunk int) ([]byte, e
 	h := sha256.New()
 	buf := make([]byte, chunk)
 	for {
-		// BUG: 不听 ctx
+		// 每读完一块就听 ctx，用户取消时立刻退出而不是把整段读完。
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
 		n, err := r.Read(buf)
 		if n > 0 {
 			_, _ = h.Write(buf[:n])
