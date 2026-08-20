@@ -22,16 +22,15 @@ func (s *Service) RevokeFingerprint(fp, reason string) error {
 		Reason:      reason,
 		At:          s.clk.Now(),
 	}
-	// 先尝试持久化，成功后再写入内存
+	// BUG: 先写入内存，持久化失败也不回滚
+	s.crl.Add(entry)
+	s.revokes++
 	if s.persistDir != "" {
 		path := persist.RevokePath(s.persistDir)
-		snapshot := append(s.crl.All(), entry)
-		if err := persist.SaveRevokeList(path, snapshot); err != nil {
+		if err := persist.SaveRevokeList(path, s.crl.All()); err != nil {
 			return fmt.Errorf("%w: %v", ErrPersist, err)
 		}
 	}
-	s.crl.Add(entry)
-	s.revokes++
 	return nil
 }
 
