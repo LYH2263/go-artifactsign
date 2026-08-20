@@ -25,7 +25,6 @@ func (HMACVerifier) Verify(keyMaterial, payload, sig []byte) error {
 		return err
 	}
 	if !hmac.Equal(want, sig) {
-		// BUG: 仅字符串，无包装点（上层再 %v）
 		return fmt.Errorf("sign: hmac mismatch")
 	}
 	return nil
