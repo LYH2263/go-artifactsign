@@ -21,7 +21,10 @@ func (s *Service) SignContext(ctx context.Context, payload []byte, meta Meta) (S
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	// BUG: 入口不检查已取消 ctx
+	// 入口先检查已取消 ctx，避免无谓加锁与等待。
+	if err := ctx.Err(); err != nil {
+		return SignatureView{}, ErrCanceled
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.closed {
@@ -107,9 +110,16 @@ func (s *Service) LookupSignature(id string) (SignatureView, error) {
 }
 
 func waitStep(ctx context.Context, d time.Duration) error {
-	// BUG: 忽略 ctx，盲目 Sleep
-	if d > 0 {
-		time.Sleep(d)
+	if d <= 0 {
+		return nil
 	}
-	return nil
+	// 听 ctx：取消立即失败返回，不再盲目 Sleep。
+	t := time.NewTimer(d)
+	defer t.Stop()
+	select {
+	case <-ctx.Done():
+		return ErrCanceled
+	case <-t.C:
+		return nil
+	}
 }
