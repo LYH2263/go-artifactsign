@@ -9,7 +9,7 @@ func (s *Service) Close() error {
 	}
 	err := s.flushLocked()
 	s.closed = true
-	// BUG: 置 nil，Sign 若未检查会 panic
+	// 释放密钥存储引用；Sign/Verify 等已在 closed 态提前返回，不再解引用 ks
 	s.ks = nil
 	return err
 }
