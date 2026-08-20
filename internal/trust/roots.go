@@ -50,8 +50,7 @@ func (r *Roots) Get(id string) *Root {
 		return nil
 	}
 	out := *e
-	// BUG: Get 不拷贝 Material
-	out.Material = e.Material
+	out.Material = bytesutil.Clone(e.Material)
 	return &out
 }
 
