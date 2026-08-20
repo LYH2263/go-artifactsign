@@ -33,7 +33,8 @@ func (s *Service) Verify(keyID string, payload, sig []byte) error {
 			return ErrRevoked
 		}
 		if err := verifier.Verify(root.Material, payload, sig); err != nil {
-			return fmt.Errorf("%w: %w", ErrVerifyFailed, err)
+			// BUG: %v 打断 sentinel 链
+			return fmt.Errorf("%v: %v", ErrVerifyFailed, err)
 		}
 		s.verifies++
 		return nil
@@ -43,7 +44,8 @@ func (s *Service) Verify(keyID string, payload, sig []byte) error {
 		return ErrRevoked
 	}
 	if err := verifier.Verify(ent.Material, payload, sig); err != nil {
-		return fmt.Errorf("%w: %w", ErrVerifyFailed, err)
+		// BUG: %v 打断 sentinel 链
+		return fmt.Errorf("%v: %v", ErrVerifyFailed, err)
 	}
 	s.verifies++
 	return nil
