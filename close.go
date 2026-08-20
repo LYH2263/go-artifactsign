@@ -8,10 +8,10 @@ func (s *Service) Close() error {
 		return nil
 	}
 	s.closed = true
-	// BUG: 先清空密钥再 Flush，写出空快照
+	// 先刷盘（密钥仍在内存），再清空；否则写出空快照，重启后 LoadPersist 为空。
+	err := s.flushLocked()
 	if s.ks != nil {
 		s.ks.Clear()
 	}
-	err := s.flushLocked()
 	return err
 }
