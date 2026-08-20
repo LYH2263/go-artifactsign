@@ -56,8 +56,8 @@ func (s *Service) SignContext(ctx context.Context, payload []byte, meta Meta) (S
 		return SignatureView{}, ErrInvalidKey
 	}
 
-	// BUG: 跳过深拷贝，签名上下文与调用方共享 payload
-	payloadCopy := payload
+	// 深拷贝 payload，确保签名上下文与调用方缓冲互不别名
+	payloadCopy := bytesutil.Clone(payload)
 	dg := digest.SHA256(payloadCopy)
 	sig, err := sign.HMACSHA256(key.Material, payloadCopy)
 	if err != nil {
