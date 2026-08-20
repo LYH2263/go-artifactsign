@@ -37,9 +37,7 @@ func (s *Service) DigestReaderContext(ctx context.Context, r io.Reader) (string,
 
 	sum, err := digest.SHA256ReaderContext(ctx, r, chunk)
 	if err != nil {
-		if ctx.Err() != nil {
-			return "", fmt.Errorf("%w: %v", ErrCanceled, ctx.Err())
-		}
+		// BUG: 不把取消映射为 ErrCanceled
 		return "", err
 	}
 	s.mu.Lock()

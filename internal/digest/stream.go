@@ -15,11 +15,7 @@ func SHA256ReaderContext(ctx context.Context, r io.Reader, chunk int) ([]byte, e
 	h := sha256.New()
 	buf := make([]byte, chunk)
 	for {
-		select {
-		case <-ctx.Done():
-			return nil, fmt.Errorf("digest: canceled: %w", ctx.Err())
-		default:
-		}
+		// BUG: 不听 ctx
 		n, err := r.Read(buf)
 		if n > 0 {
 			_, _ = h.Write(buf[:n])
