@@ -18,8 +18,7 @@ func (s *Service) flushLocked() error {
 		return nil
 	}
 	if s.ks == nil {
-		// BUG: 空 store 当成功写出空
-		return nil
+		return ErrClosed
 	}
 	meta := s.ks.MetaSnapshot()
 	if err := persist.SaveKeyMeta(persist.KeyMetaPath(s.persistDir), meta); err != nil {

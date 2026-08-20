@@ -7,11 +7,11 @@ func (s *Service) Close() error {
 	if s.closed {
 		return nil
 	}
+	err := s.flushLocked()
 	s.closed = true
-	// BUG: 先清空密钥再 Flush，写出空快照
+	// 刷盘完成后再清空密钥，避免写出空快照
 	if s.ks != nil {
 		s.ks.Clear()
 	}
-	err := s.flushLocked()
 	return err
 }
