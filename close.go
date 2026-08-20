@@ -9,9 +9,7 @@ func (s *Service) Close() error {
 	}
 	err := s.flushLocked()
 	s.closed = true
-	// 刷盘完成后再清空密钥，避免写出空快照
-	if s.ks != nil {
-		s.ks.Clear()
-	}
+	// BUG: 置 nil，Sign 若未检查会 panic
+	s.ks = nil
 	return err
 }
